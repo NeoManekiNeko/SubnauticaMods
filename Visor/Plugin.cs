@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
-using HarmonyLib;
 using Nautilus.Handlers;
 
 
@@ -21,9 +20,7 @@ public class Plugin : BaseUnityPlugin
     {
         // set project-scoped logger instance
         Logger = base.Logger;
-
-        // register harmony patches, if there are any
-        Harmony.CreateAndPatchAll(Assembly, $"{PluginInfo.PLUGIN_GUID}");
+        
         Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
     }
 }

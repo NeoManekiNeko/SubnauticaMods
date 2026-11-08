@@ -23,7 +23,21 @@ namespace Visor
             Tooltip = "Change the distance shadows are displayed until. Maximum of 8192 meters (the farthest one can swim before being reset)")]
         [OnChange(nameof(ShadowDistance_OnChanged))]
         public float shadowDistance = 200f;
-
+        
+        [Choice(Label = "Shadow Resolution", Options = new[] { "Low", "Medium", "High", "Very High" }, Tooltip = "Set the resolution of realtime shadows. Can seriously impact performance at high levels.")]
+        [OnChange(nameof(ShadowResolution_OnChanged))]
+        public string shadowResolution = "Medium";
+        
+        [Choice(Label = "Shadow Cascades", Options = new[] {"1", "2", "4"}, Tooltip = "Determines how many cascades realtime shadows are split into. Reduces blockiness.")]
+        [OnChange(nameof(ShadowCascade_OnChanged))]
+        public string shadowCascades = "4";
+        
+        // Commented as it doesn't always work, and need to determine if players want this
+        /*
+        [Slider(Label = "Shadow Cascade Split Distance", Min = 0f, Max = 8192f, DefaultValue = 100, Tooltip = "Change how far until the shadow cascades split between the near and far cascade. Does not apply on 1 cascade mode. On 4 cascades, it is converted into a Vector positioning equivalent.")]
+        [OnChange(nameof(ShadowCascadeSplit_OnChanged))]
+        public float shadowCascadesSplit = 100f;
+        */
 
         [Choice(Label = "Mipmap Streaming",
             Options = new[] { "Disabled", "Enabled" },
@@ -70,6 +84,70 @@ namespace Visor
             ErrorMessage.AddWarning("Shadow distance set to: " + e.Value);
         }
 
+        private void ShadowResolution_OnChanged(ChoiceChangedEventArgs<string> e)
+        {
+            switch (e.Value)
+            {
+                case "Low Quality":
+                    QualitySettings.shadowResolution = ShadowResolution.Low;
+                    ErrorMessage.AddWarning("Shadow resolution set to low.");
+                    break;
+                case "Medium Quality":
+                    QualitySettings.shadowResolution = ShadowResolution.Medium;
+                    ErrorMessage.AddWarning("Shadow resolution set to medium.");
+                    break;
+                case "High Quality":
+                    QualitySettings.shadowResolution = ShadowResolution.High;
+                    ErrorMessage.AddWarning("Shadow resolution set to high.");
+                    break;
+                case "Very High Quality":
+                    QualitySettings.shadowResolution = ShadowResolution.VeryHigh;
+                    ErrorMessage.AddWarning("Shadow resolution set to very high.");
+                    break;
+            }
+        }
+
+        private void ShadowCascade_OnChanged(ChoiceChangedEventArgs<string> e)
+        {
+            switch (e.Value)
+            {
+                case "1":
+                    QualitySettings.shadowCascades = 1;
+                    ErrorMessage.AddWarning("Shadow cascades set to 1 cascade.");
+                    break;
+                case "2":
+                    QualitySettings.shadowCascades = 2;
+                    ErrorMessage.AddWarning("Shadow cascades set to 2 cascades.");
+                    break;
+                case "4":
+                    QualitySettings.shadowCascades = 4;
+                    ErrorMessage.AddWarning("Shadow cascades set to 4 cascades.");
+                    break;
+            }
+        }
+
+        // Comment reason: see slider above
+        /*
+        public void ShadowCascadeSplit_OnChanged(SliderChangedEventArgs e)
+        {
+            if (QualitySettings.shadowCascades == 1)
+            {
+                // Do nothing!
+            }else if (QualitySettings.shadowCascades == 2)
+            {
+                QualitySettings.shadowCascade2Split = e.Value;
+                ErrorMessage.AddWarning("Shadow cascade split distance set to: "  + QualitySettings.shadowCascade2Split);
+            }
+            else
+            {
+                QualitySettings.shadowCascade4Split = new Vector3(e.Value * 0.15f, e.Value, Mathf.Min(e.Value * 2.33f, 0.90f));
+                ErrorMessage.AddWarning("Shadow cascade split distance set to: " + QualitySettings.shadowCascade4Split);
+            }
+                    
+            
+            
+        }
+    */
         private void AnisoChoice_OnChanged( ChoiceChangedEventArgs<string> e)
         {
             switch (e.Value)
@@ -80,9 +158,9 @@ namespace Visor
                     break;
                 case "Enable Filtering":
                     QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
-                    ErrorMessage.AddWarning("Anisotropic filtering enabled.");
+                    ErrorMessage.AddWarning("Anisotropic filtering enabled.");  
                     break;
-                case "Force Filtering":
+                case "Force Filtering On":
                     QualitySettings.anisotropicFiltering  = AnisotropicFiltering.ForceEnable;
                     ErrorMessage.AddWarning("Anisotropic filtering force enabled.");
                     break;
